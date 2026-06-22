@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <h2>Admin Dashboard</h2>
+  <button onclick="logout()">Logout</button>
+</header>
+
+<div class="container">
+
+  <h3>Create Event</h3>
+
+  <input id="title" placeholder="Title">
+  <input id="description" placeholder="Description">
+  <input id="date" placeholder="Date">
+  <input id="location" placeholder="Location">
+  <input id="price" placeholder="Price">
+  <input id="seats" placeholder="Seats">
+
+  <button onclick="createEvent()">Create</button>
+
+  <hr>
+
+  <h3>Events</h3>
+  <div id="events"></div>
+
+</div>
+
+<script src="admin.js"></script>
+
+<script>
+function logout() {
+  localStorage.clear();
+  window.location.href = "admin-login.html";
+}
+</script>
+
+</body>
+</html>
