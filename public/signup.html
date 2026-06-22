@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Signup</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header><h2>Signup</h2></header>
+
+<div class="container">
+
+  <input id="name" placeholder="Name">
+  <input id="email" placeholder="Email">
+  <input id="password" type="password" placeholder="Password">
+
+  <button onclick="signup()">Create Account</button>
+
+</div>
+
+<script>
+const API = "http://localhost:3000";
+
+async function signup() {
+  const res = await fetch(`${API}/auth/signup`, {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({
+      name: name.value,
+      email: email.value,
+      password: password.value
+    })
+  });
+
+  const data = await res.json();
+
+  localStorage.setItem("token", data.token);
+  localStorage.setItem("email", data.user.email);
+
+  alert("Account created!");
+  window.location.href = "index.html";
+}
+</script>
+
+</body>
+</html>
