@@ -176,6 +176,17 @@ uuid()
 
 );
 
+const {
+sendTicketEmail
+}
+=
+require(
+"../utils/mail"
+);
+
+const ticketCode =
+uuid();
+
 await Ticket
 .create({
 
@@ -185,8 +196,18 @@ payment.email,
 eventId:
 payment.eventId,
 
-ticketCode:
-uuid(),
+ticketCode,
+
+qr
+
+});
+
+await sendTicketEmail({
+
+email:
+payment.email,
+
+ticketCode,
 
 qr
 
