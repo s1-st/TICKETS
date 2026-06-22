@@ -164,64 +164,44 @@ e.message
 LOGIN
 =================== */
 
-router.post(
-"/login",
+router.post("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
 
-async(req,res)=>{
+    const user = await User.findOne({ email });
 
-try{
+    if (!user) {
+      return res.status(401).json({ message: "Invalid login" });
+    }
 
-const {
+    const match = await bcrypt.compare(password, user.password);
 
-email,
-password
+    if (!match) {
+      return res.status(401).json({ message: "Wrong password" });
+    }
 
-}
-=
-req.body;
+    const token = jwt.sign(
+      {
+        id: user._id,
+        role: user.role
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: "30d" }
+    );
 
-const user =
-await User
-.findOne({
+    res.json({
+      success: true,
+      token,
+      user: {
+        name: user.name,
+        email: user.email,
+        role: user.role
+      }
+    });
 
-email
-
-});
-
-if(!user){
-
-return res
-.status(401)
-.json({
-
-message:
-"Invalid login"
-
-});
-
-}
-
-const match =
-await bcrypt
-.compare(
-
-password,
-
-user.password
-
-);
-
-if(
-!match
-){
-
-return res
-.status(401)
-.json({
-
-message:
-"Wrong password"
-
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
 });
 
 }
@@ -285,3 +265,4 @@ e.message
 
 module.exports =
 router;
+
