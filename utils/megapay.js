@@ -1,37 +1,54 @@
 const axios = require("axios");
 
 async function initiatePayment({
-  phone,
-  amount,
-  email,
-  eventId
+phone,
+amount,
+email,
+eventId
 }) {
-  try {
-    const response = await axios.post(
-      "https://api.megapay.co.ke/stkpush", // (example endpoint - confirm from your dashboard)
-      {
-        phone,
-        amount,
-        email,
-        reference: eventId,
-        callback_url: process.env.MEGAPAY_CALLBACK_URL
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${process.env.MEGAPAY_API_KEY}`,
-          "Content-Type": "application/json"
-        }
-      }
-    );
 
-    return response.data;
+try {
 
-  } catch (error) {
-    console.log(error.response?.data || error.message);
-    throw new Error("MegaPay STK push failed");
-  }
+const response =
+await axios.post(
+
+"https://megapay.co.ke/backend/v1/initiatestk",
+
+{
+api_key:
+process.env.MEGAPAY_API_KEY,
+
+email:
+process.env.MEGAPAY_EMAIL,
+
+amount,
+
+msisdn:
+phone,
+
+reference:
+eventId
+}
+
+);
+
+return response.data;
+
+}
+catch(error){
+
+console.log(
+error.response?.data
+);
+
+throw new Error(
+"MegaPay STK push failed"
+);
+
+}
+
 }
 
 module.exports = {
-  initiatePayment
+initiatePayment
 };
