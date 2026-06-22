@@ -179,3 +179,4 @@ router.post("/callback", async (req, res) => {
     res.sendStatus(200);
   }
 });
+module.exports = router;
