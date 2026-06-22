@@ -121,115 +121,61 @@ e.message
 CALLBACK
 ===================== */
 
-router.post(
-"/callback",
+router.post("/callback", async (req, res) => {
+  try {
+    const data = req.body;
 
-async(req,res)=>{
+    console.log("CALLBACK RECEIVED:", data);
 
-try{
+    // SAFER CHECK (MegaPay format may differ)
+    const checkout =
+      data.checkoutId ||
+      data.CheckoutRequestID ||
+      data.reference ||
+      null;
 
-const data =
-req.body;
+    const status =
+      data.status ||
+      data.ResultCode ||
+      "unknown";
 
-const callback =
+    if (!checkout) {
+      return res.sendStatus(200);
+    }
 
-data
-.Body
-.stkCallback;
+    const payment = await Payment.findOne({
+      checkoutId: checkout
+    });
 
-if(
-callback
-.ResultCode === 0
-){
+    if (payment && (status === "success" || status === 0)) {
 
-const checkout =
+      const qr = await QRCode.toDataURL(uuid());
 
-callback
-.CheckoutRequestID;
+      const { sendTicketEmail } = require("../utils/mail");
 
-const payment =
+      const ticketCode = uuid();
 
-await Payment
-.findOne({
+      await Ticket.create({
+        email: payment.email,
+        eventId: payment.eventId,
+        ticketCode,
+        qr
+      });
 
-checkoutId:
-checkout
+      await sendTicketEmail({
+        email: payment.email,
+        ticketCode,
+        qr
+      });
 
+      payment.status = "paid";
+      await payment.save();
+    }
+
+    res.sendStatus(200);
+
+  } catch (err) {
+    console.log("Callback error:", err);
+    res.sendStatus(200);
+  }
 });
-
-if(
-payment
-){
-
-const qr =
-
-await QRCode
-.toDataURL(
-
-uuid()
-
-);
-
-const {
-sendTicketEmail
-}
-=
-require(
-"../utils/mail"
-);
-
-const ticketCode =
-uuid();
-
-await Ticket
-.create({
-
-email:
-payment.email,
-
-eventId:
-payment.eventId,
-
-ticketCode,
-
-qr
-
-});
-
-await sendTicketEmail({
-
-email:
-payment.email,
-
-ticketCode,
-
-qr
-
-});
-
-payment.status =
-"paid";
-
-await payment.save();
-
-}
-
-}
-
-res.sendStatus(
-200
-);
-
-}catch{
-
-res.sendStatus(
-500
-);
-
-}
-
-}
-);
-
-module.exports =
-router;
