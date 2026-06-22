@@ -74,8 +74,6 @@ message:
 
 });
 
-}
-
 /* HASH */
 
 const hashed =
