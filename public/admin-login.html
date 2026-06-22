@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Login</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <h2>Admin Login</h2>
+</header>
+
+<div class="container">
+
+  <input id="email" placeholder="Admin Email">
+  <input id="password" type="password" placeholder="Password">
+
+  <button onclick="loginAdmin()">Login</button>
+
+</div>
+
+<script>
+const API = "http://localhost:3000";
+
+async function loginAdmin() {
+  const res = await fetch(`${API}/auth/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      email: email.value,
+      password: password.value
+    })
+  });
+
+  const data = await res.json();
+
+  if (!data.success) {
+    alert("Login failed");
+    return;
+  }
+
+  if (data.user.role !== "admin") {
+    alert("Access denied: Not an admin");
+    return;
+  }
+
+  localStorage.setItem("token", data.token);
+  localStorage.setItem("role", data.user.role);
+
+  window.location.href = "admin-dashboard.html";
+}
+</script>
+
+</body>
+</html>
