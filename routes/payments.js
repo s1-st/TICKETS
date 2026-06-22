@@ -16,8 +16,7 @@ require("uuid");
 const QRCode =
 require("qrcode");
 
-const { stkPush } =
-require("../utils/mpesa");
+const { initiatePayment } = require("../utils/megapay");
 
 const router =
 express.Router();
@@ -64,16 +63,11 @@ message:
 
 }
 
-const pay =
-await stkPush({
-
-phone,
-
-amount:
-event.price,
-
-eventId
-
+const pay = await initiatePayment({
+  phone,
+  amount: event.price,
+  email,
+  eventId
 });
 
 await Payment
